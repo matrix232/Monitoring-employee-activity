@@ -1,27 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Мониторинг активности</title>
+    <title>Данные</title>
 </head>
 <body>
-    <h1>Мониторинг активности</h1>
-    <h2>Количество пользователей: {{user_nums}}</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>IP</th>
-                <th>Пользователь</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ip, client in clients.items() %}
-            <tr>
-                <td>{{ ip }}</td>
-                <td>{{ client['user_data'] }}</td>
-                <td>{{ client['last_activity'] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h1>Данные от сервера</h1>
+    <p>Количество пользователей: {{ user_nums }}</p>
+    <p>IP-адреса: {{ ip }}</p>
+    <p>Машины: {{ machine }}</p>
+    <p>Последняя активность: {{ last_activity }}</p>
 </body>
 </html>
+
